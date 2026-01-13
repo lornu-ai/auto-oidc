@@ -1,0 +1,5 @@
+{
+  "name": "The Secure Relay: OIDC Distributed Trust Hub",
+  "description": "An interactive architectural visualization of a distributed OIDC trust hub using Cloudflare Zero Trust, Workers, and IAM, specifically for automation-hub and oidc-hub properties.",
+  "requestFramePermissions": []
+}
