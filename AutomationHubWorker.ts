@@ -1,4 +1,3 @@
-
 /**
  * OIDC Sovereign Relay Hub - Cloudflare Worker
  * Endpoint: automation-hub.dockworker.ai
@@ -6,7 +5,7 @@
 
 interface Env {
   PRIVATE_KEY: string; // RS256 Private Key stored as a Secret
-  ISSUER_URL: string;  // https://automation-hub.dockworker.ai
+  ISSUER_URL: string; // https://automation-hub.dockworker.ai
   ALLOWED_AUDIENCE: string;
 }
 
@@ -22,7 +21,7 @@ export default {
         response_types_supported: ["id_token"],
         subject_types_supported: ["public"],
         id_token_signing_alg_values_supported: ["RS256"],
-        claims_supported: ["sub", "iss", "aud", "exp", "iat", "email", "roles"]
+        claims_supported: ["sub", "iss", "aud", "exp", "iat", "email", "roles"],
       });
     }
 
@@ -30,14 +29,16 @@ export default {
     if (url.pathname === "/.well-known/jwks.json") {
       // In a real implementation, you'd extract the public key from the private key secret
       return Response.json({
-        keys: [{
-          kty: "RSA",
-          use: "sig",
-          kid: "relay-key-v1",
-          alg: "RS256",
-          n: "...", // Public Modulus (Base64URL)
-          e: "AQAB"
-        }]
+        keys: [
+          {
+            kty: "RSA",
+            use: "sig",
+            kid: "relay-key-v1",
+            alg: "RS256",
+            n: "...", // Public Modulus (Base64URL)
+            e: "AQAB",
+          },
+        ],
       });
     }
 
@@ -59,7 +60,7 @@ export default {
           iat: Math.floor(Date.now() / 1000),
           exp: Math.floor(Date.now() / 1000) + 3600,
           roles: mapInternalRoles(payload),
-          org: "dockworker-automation"
+          org: "dockworker-automation",
         };
 
         // Step C: Sign new "Sovereign" Token
@@ -72,20 +73,20 @@ export default {
     }
 
     return new Response("OIDC Hub Operational", { status: 200 });
-  }
+  },
 };
 
-async function verifyInboundToken(token: string) {
+async function verifyInboundToken(_token: string) {
   // Logic to verify GitHub/User JWT using their OIDC keys
   return { sub: "charles", repo: "infra-live" };
 }
 
-function mapInternalRoles(payload: any) {
+function mapInternalRoles(payload: Record<string, unknown>) {
   // Translate "repo:infra-live" -> "crossplane-admin"
   return payload.repo === "infra-live" ? ["admin", "crossplane-executor"] : ["viewer"];
 }
 
-async function signSovereignJWT(payload: any, privateKey: string) {
+async function signSovereignJWT(_payload: Record<string, unknown>, _privateKey: string) {
   // Standard WebCrypto signing logic for RS256
   // (Omitted for brevity, using placeholder)
   return "eyJhbGciOiJSUzI1NiIs...";
