@@ -1,7 +1,6 @@
-
 export enum HubType {
-  AUTOMATION = 'automation-hub.dockworker.ai',
-  OIDC = 'oidc-hub.dockworker.ai'
+  AUTOMATION = "automation-hub.dockworker.ai",
+  OIDC = "oidc-hub.dockworker.ai",
 }
 
 export interface NodePosition {
@@ -14,7 +13,7 @@ export interface ArchitectureComponent {
   name: string;
   description: string;
   icon: string;
-  category: 'User' | 'Edge' | 'Identity' | 'Resource';
+  category: "User" | "Edge" | "Identity" | "Resource";
 }
 
 export interface FlowStep {
