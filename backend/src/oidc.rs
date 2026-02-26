@@ -6,7 +6,7 @@ use base64::{engine::general_purpose, Engine as _};
 use jsonwebtoken::{decode, decode_header, jwk::JwkSet, Algorithm, DecodingKey, Validation};
 use serde_json::Value;
 use std::collections::HashMap;
-use tracing::{debug, warn};
+use tracing::debug;
 
 pub struct OidcManager {
     config: Config,
@@ -90,19 +90,6 @@ impl OidcManager {
         }
 
         Err(anyhow!("Could not detect provider from token"))
-    }
-
-    #[allow(dead_code)]
-    pub async fn exchange_token(
-        &self,
-        _source_token: &str,
-        _source_provider: &str,
-        _target_provider: &str,
-    ) -> Result<String> {
-        // Token exchange logic would go here
-        // This is a placeholder for future implementation
-        warn!("Token exchange not yet implemented");
-        Err(anyhow!("Token exchange not implemented"))
     }
 }
 

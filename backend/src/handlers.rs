@@ -43,7 +43,9 @@ pub async fn token_validate(
             )
         }
         Err(e) => {
-            error!("Token validation failed: {}", e);
+            // Log the full error chain server-side but return a generic message to clients
+            // to avoid leaking internal details (JWKS URIs, network errors, key info).
+            error!("Token validation failed: {:#}", e);
             (
                 StatusCode::UNAUTHORIZED,
                 Json(ValidateResponse {
@@ -51,7 +53,7 @@ pub async fn token_validate(
                     claims: None,
                     expires_at: None,
                     provider: payload.provider,
-                    error: Some(e.to_string()),
+                    error: Some("Token validation failed".to_string()),
                 }),
             )
         }
@@ -59,42 +61,22 @@ pub async fn token_validate(
 }
 
 pub async fn token_exchange(
-    State(manager): State<Arc<OidcManager>>,
+    State(_manager): State<Arc<OidcManager>>,
     Json(payload): Json<ExchangeRequest>,
 ) -> (StatusCode, Json<ExchangeResponse>) {
     info!(
-        "Exchanging token from {} to {}",
+        "Token exchange requested from {} to {} (not yet implemented)",
         payload.source_provider, payload.target_provider
     );
 
-    match manager
-        .exchange_token(
-            &payload.source_token,
-            &payload.source_provider,
-            &payload.target_provider,
-        )
-        .await
-    {
-        Ok(token) => (
-            StatusCode::OK,
-            Json(ExchangeResponse {
-                token: Some(token),
-                expires_in: Some(3600),
-                error: None,
-            }),
-        ),
-        Err(e) => {
-            error!("Token exchange failed: {}", e);
-            (
-                StatusCode::BAD_REQUEST,
-                Json(ExchangeResponse {
-                    token: None,
-                    expires_in: None,
-                    error: Some(e.to_string()),
-                }),
-            )
-        }
-    }
+    (
+        StatusCode::NOT_IMPLEMENTED,
+        Json(ExchangeResponse {
+            token: None,
+            expires_in: None,
+            error: Some("Token exchange is not yet implemented".to_string()),
+        }),
+    )
 }
 
 pub async fn list_providers(State(manager): State<Arc<OidcManager>>) -> Json<ProvidersResponse> {
