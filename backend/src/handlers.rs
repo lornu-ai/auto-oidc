@@ -43,7 +43,9 @@ pub async fn token_validate(
             )
         }
         Err(e) => {
-            error!("Token validation failed: {}", e);
+            // Log the full error chain server-side but return a generic message to clients
+            // to avoid leaking internal details (JWKS URIs, network errors, key info).
+            error!("Token validation failed: {:#}", e);
             (
                 StatusCode::UNAUTHORIZED,
                 Json(ValidateResponse {
@@ -51,7 +53,7 @@ pub async fn token_validate(
                     claims: None,
                     expires_at: None,
                     provider: payload.provider,
-                    error: Some(e.to_string()),
+                    error: Some("Token validation failed".to_string()),
                 }),
             )
         }
@@ -59,42 +61,25 @@ pub async fn token_validate(
 }
 
 pub async fn token_exchange(
-    State(manager): State<Arc<OidcManager>>,
+    State(_manager): State<Arc<OidcManager>>,
     Json(payload): Json<ExchangeRequest>,
 ) -> (StatusCode, Json<ExchangeResponse>) {
+    // Truncate provider names to 50 chars to prevent excessive log sizes from malicious clients
+    let source = truncate_string(&payload.source_provider, 50);
+    let target = truncate_string(&payload.target_provider, 50);
     info!(
-        "Exchanging token from {} to {}",
-        payload.source_provider, payload.target_provider
+        "Token exchange requested from {} to {} (not yet implemented)",
+        source, target
     );
 
-    match manager
-        .exchange_token(
-            &payload.source_token,
-            &payload.source_provider,
-            &payload.target_provider,
-        )
-        .await
-    {
-        Ok(token) => (
-            StatusCode::OK,
-            Json(ExchangeResponse {
-                token: Some(token),
-                expires_in: Some(3600),
-                error: None,
-            }),
-        ),
-        Err(e) => {
-            error!("Token exchange failed: {}", e);
-            (
-                StatusCode::BAD_REQUEST,
-                Json(ExchangeResponse {
-                    token: None,
-                    expires_in: None,
-                    error: Some(e.to_string()),
-                }),
-            )
-        }
-    }
+    (
+        StatusCode::NOT_IMPLEMENTED,
+        Json(ExchangeResponse {
+            token: None,
+            expires_in: None,
+            error: Some("Token exchange is not yet implemented".to_string()),
+        }),
+    )
 }
 
 pub async fn list_providers(State(manager): State<Arc<OidcManager>>) -> Json<ProvidersResponse> {
@@ -109,4 +94,13 @@ pub async fn list_providers(State(manager): State<Arc<OidcManager>>) -> Json<Pro
         .collect();
 
     Json(ProvidersResponse { providers })
+}
+
+/// Truncate a string to a maximum length to prevent log bloat from malicious input.
+fn truncate_string(s: &str, max_len: usize) -> String {
+    if s.len() > max_len {
+        format!("{}...", &s[..max_len])
+    } else {
+        s.to_string()
+    }
 }
