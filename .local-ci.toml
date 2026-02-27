@@ -22,6 +22,6 @@ timeout = 600
 depends_on = []
 
 [stages.rust-test]
-command = ["cargo", "test", "--manifest-path", "backend/Cargo.toml"]
+command = ["cargo", "test", "--manifest-path", "backend/Cargo.toml", "--all-targets"]
 timeout = 600
 depends_on = ["rust-clippy"]
