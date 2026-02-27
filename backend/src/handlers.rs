@@ -64,9 +64,12 @@ pub async fn token_exchange(
     State(_manager): State<Arc<OidcManager>>,
     Json(payload): Json<ExchangeRequest>,
 ) -> (StatusCode, Json<ExchangeResponse>) {
+    // Truncate provider names to 50 chars to prevent excessive log sizes from malicious clients
+    let source = truncate_string(&payload.source_provider, 50);
+    let target = truncate_string(&payload.target_provider, 50);
     info!(
         "Token exchange requested from {} to {} (not yet implemented)",
-        payload.source_provider, payload.target_provider
+        source, target
     );
 
     (
@@ -91,4 +94,13 @@ pub async fn list_providers(State(manager): State<Arc<OidcManager>>) -> Json<Pro
         .collect();
 
     Json(ProvidersResponse { providers })
+}
+
+/// Truncate a string to a maximum length to prevent log bloat from malicious input.
+fn truncate_string(s: &str, max_len: usize) -> String {
+    if s.len() > max_len {
+        format!("{}...", &s[..max_len])
+    } else {
+        s.to_string()
+    }
 }
