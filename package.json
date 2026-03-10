@@ -1,22 +1,54 @@
 {
-  "name": "the-secure-relay:-oidc-distributed-trust-hub",
+  "name": "auto-oidc",
+  "description": "The Secure Relay - OIDC Distributed Trust Hub",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "packageManager": "bun@1.1.21",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm run type-check && npm run lint && npm run format:check && npm run test && npm run test:e2e"
   },
   "dependencies": {
-    "react-dom": "^19.2.3",
     "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "@google/genai": "^1.35.0"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "@types/node": "^24.11.1",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@tailwindcss/vite": "^4.1.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2",
+    "eslint": "^9.15.0",
+    "@eslint/js": "^9.15.0",
+    "typescript-eslint": "^8.15.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.15",
+    "globals": "^16.1.0",
+    "prettier": "^3.4.2",
+    "vitest": "^4.0.0",
+    "@vitest/ui": "^4.0.0",
+    "@vitest/coverage-v8": "^4.0.0",
+    "@testing-library/react": "^14.4.3",
+    "@testing-library/dom": "^9.3.4",
+    "@testing-library/user-event": "^14.5.2",
+    "jsdom": "^24.1.1",
+    "@playwright/test": "^1.48.2"
   }
 }
