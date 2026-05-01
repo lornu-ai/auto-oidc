@@ -1,0 +1,27 @@
+# stevedores-org/local-ci configuration for auto-oidc
+# Run: local-ci              (all stages)
+#       local-ci fmt clippy  (specific stages)
+#       local-ci --fix fmt   (auto-fix formatting)
+
+[cache]
+skip_dirs = [".git", "backend/target", "node_modules", "dist", ".claude"]
+include_patterns = ["*.rs", "*.toml", "*.ts", "*.tsx"]
+
+[dependencies]
+required = ["cargo", "rustfmt", "clippy"]
+optional = ["bun"]
+
+[stages.rust-fmt]
+command = ["cargo", "fmt", "--manifest-path", "backend/Cargo.toml", "--all", "--", "--check"]
+fix_command = ["cargo", "fmt", "--manifest-path", "backend/Cargo.toml", "--all"]
+timeout = 120
+
+[stages.rust-clippy]
+command = ["cargo", "clippy", "--manifest-path", "backend/Cargo.toml", "--all-targets", "--", "-D", "warnings"]
+timeout = 600
+depends_on = []
+
+[stages.rust-test]
+command = ["cargo", "test", "--manifest-path", "backend/Cargo.toml", "--all-targets"]
+timeout = 600
+depends_on = ["rust-clippy"]

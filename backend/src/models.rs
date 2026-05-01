@@ -26,7 +26,9 @@ pub struct ValidateResponse {
     pub error: Option<String>,
 }
 
+// API contract for future token exchange — not yet implemented (501).
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct ExchangeRequest {
     pub source_token: String,
     pub source_provider: String,
